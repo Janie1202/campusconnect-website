@@ -1,0 +1,27 @@
+name: Deploy Website to EC2
+
+# Step 1: Define when the automation starts
+on:
+  push:
+    branches:
+      - main  # Trigger this whenever we push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 2: Get the code from your repo
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 3: Send files to EC2 using SCP (Secure Copy)
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."      # Copy everything in the repo
+          target: "/var/www/html"  # This is Nginx's default folder
+          strip_components: 0
